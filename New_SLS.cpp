@@ -22,29 +22,12 @@ protected:
   osg::Camera* mCamera;
 };
 
-/*New_SLS::New_SLS()
-{
-  osg::ref_ptr < osg::Node > node = new osg::Node;
-  osg::ref_ptr < osg::Node > root = new osg::Node;
-  std::string name = "SLSprojector";
-  std::string image_name = "laser_texture.png";
-  double range = 0; 
-  double fov = 60.0;
-  init(name,"base_link", root, node, image_name, range, fov, 0);
-}*/
-
 
 void New_SLS::New_SLS_Sensing(std::string name,std::string parentName, osg::Node *root, osg::Node *node, std::string image_name,
-                                         double fov, bool laser)//:	SimulatedDevice(cfg)
-//New_SLS::New_SLS(New_SLS_Config * cfg, osg::Node *node):	SimulatedDevice(cfg)
+                                         double fov, bool laser)
 {
   double range = 0;
-  /*init(name, parentName, root, node, image_name, range, fov, laser);
-}
 
-void New_SLS::init(std::string name,std::string parentName, osg::Node *root, osg::Node *node, std::string image_name, double range,
-                               double fov, bool laser)
-{*/
   this->name = name;
   this->fov = fov;
   this->range = range;
@@ -90,8 +73,6 @@ void New_SLS::init(std::string name,std::string parentName, osg::Node *root, osg
   osg::Uniform* laserUniform = new osg::Uniform("isLaser", laser);
   root->getOrCreateStateSet()->addUniform(laserUniform);
 
-  //cout<<"\n----"<< camera <<"----\n";
-
 }
 
 New_SLS::New_SLS(New_SLS_Config * cfg, osg::Node *trackNode) : SimulatedDevice(cfg)
@@ -115,16 +96,7 @@ SimulatedDeviceConfig::Ptr New_SLS_Factory::processConfig(const xmlpp::Node* nod
 {   
   New_SLS_Config * cfg = new New_SLS_Config(getType());
   xmlpp::Node::NodeList list = node->get_children();
-  /*for (xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter)
-  {
-    const xmlpp::Node* child = dynamic_cast<const xmlpp::Node*>(*iter);
-    if (child->get_name() == "relativeTo")
-      config->extractStringChar(child, cfg->relativeTo);
-    else if (child->get_name() == "position")
-      config->extractPositionOrColor(child, cfg->position);
-    else if (child->get_name() == "orientation")
-      config->extractOrientation(child, cfg->orientation);
-  }*/
+
   for (xmlpp::Node::NodeList::iterator iter = list.begin(); iter != list.end(); ++iter)
   {
     const xmlpp::Node* child = dynamic_cast<const xmlpp::Node*>(*iter);
@@ -269,12 +241,6 @@ std::vector<boost::shared_ptr<ROSInterface> > New_SLS_Factory::getInterface(ROSI
     ROS_WARN("Returning empty ROS interface for device %s...", rosInterface.targetName.c_str());
   return ifaces;
 }
-
-/*New_SLS::New_SLS(New_SLS_Config * cfg,osg::Node *trackNode) :
-    SimulatedDevice(cfg)
-{
-  this->parent=trackNode;
-}*/
 
 
 
