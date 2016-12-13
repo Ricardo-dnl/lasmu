@@ -22,7 +22,7 @@ protected:
   osg::Camera* mCamera;
 };
 
-
+//VirtualSLSProjector function
 void New_SLS::New_SLS_Sensing(std::string name,std::string parentName, osg::Node *root, osg::Node *node, std::string image_name,
                                          double fov, bool laser)
 {
@@ -75,10 +75,13 @@ void New_SLS::New_SLS_Sensing(std::string name,std::string parentName, osg::Node
 
 }
 
+//Create the barebone
 New_SLS::New_SLS(New_SLS_Config * cfg, osg::Node *trackNode) : SimulatedDevice(cfg)
 {
     // Set position of the sensor according to declaration in
     // xml with relativeTo variable
+    
+    //debug
     cout<<"\ntrackNode----"<<trackNode<<"----\n";
 
     this->parent = trackNode;
@@ -103,6 +106,7 @@ SimulatedDeviceConfig::Ptr New_SLS_Factory::processConfig(const xmlpp::Node* nod
 
     if (child->get_name() == "relativeTo"){
         printf("\n\n aqui1\n \n");
+      //teste if there is any difference
       config->extractStringChar(child, cfg->relativeTo);
       config->extractStringChar(child,cfg->linkName);
     }
@@ -165,28 +169,27 @@ bool New_SLS_Factory::applyConfig(SimulatedIAUV * auv, Vehicle &vehicleChars, Sc
               cfg->orientation[2], osg::Vec3d(0, 0, 1)));
           auv->urdf->link[target]->getParent(0)->getParent(0)->asGroup()->addChild(vMd);
  
-          //auv->devices->all.push_back(New_SLS::Ptr(new New_SLS(cfg,vMd)));
         // Create an object New_SLS
-          New_SLS* SLS;
-          SLS = new New_SLS(cfg, vMd);
+	New_SLS* SLS;
+	SLS = new New_SLS(cfg, vMd);
 
- 		//sls_projectors.push_back(VirtualSLSProjector(slp.name, slp.linkName, oscene->root, //maybe oscene->scene->localizedWorld ?
+	//sls_projectors.push_back(VirtualSLSProjector(slp.name, slp.linkName, oscene->root, //maybe oscene->scene->localizedWorld ?
         //                                         vMp, slp.image_name, slp.fov, (slp.laser) ? true : false));  
-          //printf("\n\n ---%s \n \n",cfg->linkName);
-          //cout<<cfg->linkName;
+  	//printf("\n\n ---%s \n \n",cfg->linkName);
+  	//cout<<cfg->linkName;
 
         SLS->New_SLS_Sensing(cfg->name, cfg->linkName, sceneBuilder->root, //maybe oscene->scene->localizedWorld ?
                                                  vMd, cfg->image_name, cfg->fov, (cfg->laser) ? true : false);
 
-
+	// Upload configuration to the AUV devices
         auv->devices->all.push_back(New_SLS::Ptr(SLS));
-        //camview.push_back(auv->SimulatedIAUV.);
-
+	
+	// Upload to camview, where all the cameras are
         auv->camview.push_back(SLS->camera);
 
         cout<<"camara name"<<SLS->camera.name;
 
-		//OSG_INFO << "Done adding a structured New_SLS..." << std::endl;
+	//OSG_INFO << "Done adding a structured New_SLS..." << std::endl;
         }
       }
       else
@@ -197,33 +200,8 @@ bool New_SLS_Factory::applyConfig(SimulatedIAUV * auv, Vehicle &vehicleChars, Sc
 }
 
 
-  // Adding Structured light projector
-  /*while (vehicleChars.sls_projectors.size() > 0)
-  {
-    OSG_INFO << "Adding a structured light projector..." << std::endl;
-    slProjector slp;
-    slp = vehicleChars.sls_projectors.front();
-    vehicleChars.sls_projectors.pop_front();
-    
-	osg::ref_ptr < osg::Transform > vMp = (osg::Transform*)new osg::PositionAttitudeTransform;
-    vMp->asPositionAttitudeTransform()->setPosition(osg::Vec3d(slp.position[0], slp.position[1], slp.position[2]));
-    vMp->asPositionAttitudeTransform()->setAttitude(
-        osg::Quat(slp.orientation[0], osg::Vec3d(1, 0, 0), slp.orientation[1], osg::Vec3d(0, 1, 0), slp.orientation[2],
-                  osg::Vec3d(0, 0, 1)));
-    urdf->link[slp.link]->getParent(0)->getParent(0)->asGroup()->addChild(vMp);
 
-
-    //camview.push_back(VirtualCamera(oscene->root, "slp_camera", vMp, 512, 512,slp.fov,102.4));
-    sls_projectors.push_back(VirtualSLSProjector(slp.name, slp.linkName, oscene->root, //maybe oscene->scene->localizedWorld ?
-                                                 vMp, slp.image_name, slp.fov, (slp.laser) ? true : false));
-    camview.push_back(sls_projectors.back().camera);
-
-
-    OSG_INFO << "Done adding a structured light projector..." << std::endl;
-  }*/
-
-
-
+//for debugging
 std::vector<boost::shared_ptr<ROSInterface> > New_SLS_Factory::getInterface(ROSInterfaceInfo & rosInterface, std::vector<boost::shared_ptr<SimulatedIAUV> > & iauvFile)
 {
   std::vector < boost::shared_ptr<ROSInterface> > ifaces;
@@ -241,7 +219,6 @@ std::vector<boost::shared_ptr<ROSInterface> > New_SLS_Factory::getInterface(ROSI
     ROS_WARN("Returning empty ROS interface for device %s...", rosInterface.targetName.c_str());
   return ifaces;
 }
-
 
 
 void New_SLS_ROSPublisher::createPublisher(ros::NodeHandle &nh)
